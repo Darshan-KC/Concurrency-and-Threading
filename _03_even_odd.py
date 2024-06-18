@@ -1,0 +1,1 @@
+# Write a python program to create two threads to find even and odd from 30 to 50
