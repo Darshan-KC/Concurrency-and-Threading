@@ -25,5 +25,24 @@ def download_file(url, dest_folder):
         
 # Function to handle downloading multiple file concurrently
 def concurrent_download(urls, dest_folder):
-    pass
+    if not os.path.exists(dest_folder):
+        os.makedirs(dest_folder)
     
+    threads = []
+    for url in urls:
+        thread = threading.Thread(target=download_file,args=(url,dest_folder))
+        threads.append(thread)
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
+        
+def main():
+    urls = [
+        
+    ]
+    dest_folder = "downloads"
+    concurrent_download(urls,dest_folder)
+
+if __name__ == "__main__":
+    main()
