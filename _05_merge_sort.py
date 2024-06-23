@@ -52,6 +52,11 @@ def merge(left :list[int],right :list[int]) ->list[int]:
     
     return merged_list
 
+def multi_threaded_merge_sort(arr, num_threads):
+    if num_threads <= 1:
+        return merge_sort(arr)
+    # Divide the input list into equal-sized sublists
+
 def main() -> None:
     """
     Main function to execute merge sort on a sample list and print the results.
