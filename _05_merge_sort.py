@@ -52,6 +52,11 @@ def merge(left :list[int],right :list[int]) ->list[int]:
     
     return merged_list
 
+def threaded_sort(sublist,sorted_sublists, lock):
+    sorted_sublist = merge_sort(sublist)
+    with lock:
+        sorted_sublists.append(sorted_sublist)
+
 def multi_threaded_merge_sort(arr, num_threads):
     if num_threads <= 1:
         return merge_sort(arr)
