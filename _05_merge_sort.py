@@ -61,6 +61,35 @@ def multi_threaded_merge_sort(arr, num_threads):
     if num_threads <= 1:
         return merge_sort(arr)
     # Divide the input list into equal-sized sublists
+    size = len(arr) // num_threads
+    
+    sublists = [arr[i:size+1] for i in range(0,len(arr),size)]
+    
+    # if((len(arr)%num_threads) != 0):
+    #     sublists[-1].extend(arr[num_threads*size:])
+    remaining = len(arr) % num_threads
+    if remaining != 0:
+        sublists[-1].extend(arr[-remaining:])
+        
+    sorted_sublists = []
+    lock = threading.Lock()
+    threads = []
+
+    for sublist in sublists:
+        thread = threading.Thread(target=threaded_sort, args=(sublist, sorted_sublists, lock))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+
+    while len(sorted_sublists) > 1:
+        left = sorted_sublists.pop(0)
+        right = sorted_sublists.pop(0)
+        merged = merge(left, right)
+        sorted_sublists.append(merged)
+
+    return sorted_sublists[0]
 
 def main() -> None:
     """
@@ -68,10 +97,10 @@ def main() -> None:
     """
     
     input_list = [ 4,5,8,3,0,5,3,9,4,3]
-    # num_threads = 2
+    num_threads = 2
     print("Original List:", input_list )
-    # sorted_list = multi_threaded_merge_sort(input_list, num_threads)
-    sorted_list = merge_sort(input_list)
+    sorted_list = multi_threaded_merge_sort(input_list, num_threads)
+    # sorted_list = merge_sort(input_list)
     print("Sorted list:", sorted_list)
     
     # Print the docstring of the functions
