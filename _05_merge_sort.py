@@ -52,44 +52,27 @@ def merge(left :list[int],right :list[int]) ->list[int]:
     
     return merged_list
 
-def threaded_sort(sublist,sorted_sublists, lock):
-    sorted_sublist = merge_sort(sublist)
-    with lock:
-        sorted_sublists.append(sorted_sublist)
-
 def multi_threaded_merge_sort(arr, num_threads):
     if num_threads <= 1:
         return merge_sort(arr)
     # Divide the input list into equal-sized sublists
     size = len(arr) // num_threads
-    
-    sublists = [arr[i:size+1] for i in range(0,len(arr),size)]
-    
-    # if((len(arr)%num_threads) != 0):
-    #     sublists[-1].extend(arr[num_threads*size:])
-    remaining = len(arr) % num_threads
-    if remaining != 0:
-        sublists[-1].extend(arr[-remaining:])
-        
-    sorted_sublists = []
-    lock = threading.Lock()
+    sublists = [arr[i:i+size] for i in range(0, len(arr), size)]
+    # Create threads for sorting each sublist
     threads = []
-
+    sorted_sublists = []
     for sublist in sublists:
-        thread = threading.Thread(target=threaded_sort, args=(sublist, sorted_sublists, lock))
+        thread = threading.Thread(target=lambda sublist: sorted_sublists.append(merge_sort(sublist)), args=(sublist,))
         thread.start()
         threads.append(thread)
-
+    # Wait for all threads to complete
     for thread in threads:
         thread.join()
-
-    while len(sorted_sublists) > 1:
-        left = sorted_sublists.pop(0)
-        right = sorted_sublists.pop(0)
-        merged = merge(left, right)
-        sorted_sublists.append(merged)
-
-    return sorted_sublists[0]
+    # Merge the sorted sublists
+    merged = sorted_sublists[0]
+    for sublist in sorted_sublists[1:]:
+        merged = merge(merged, sublist)
+    return merged
 
 def main() -> None:
     """
