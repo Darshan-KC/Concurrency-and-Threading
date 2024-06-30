@@ -2,3 +2,12 @@
 
 import requests
 import threading
+
+def http_request():
+    pass 
+
+def main() ->None:
+    pass
+
+if __name__ == "__main__":
+    main()
